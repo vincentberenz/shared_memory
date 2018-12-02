@@ -11,15 +11,14 @@
 
 namespace shared_memory {
 
-
+  template<class Serializable>
   class Exchange_manager_producer {
 
   public:
 
     Exchange_manager_producer(std::string segment_id,
-		     std::string object_id,
-		     int max_exhange_size,
-		     int serialization_size);
+			      std::string object_id,
+			      int max_exhange_size);
 
     
     ~Exchange_manager_producer();
@@ -30,13 +29,13 @@ namespace shared_memory {
 
     void read_consumer_actions_and_update();
 
-    void get_and_purge_consummed_ids(std::deque<int> &get);
+    void get_and_purge_consumed_ids(std::deque<int> &get);
     
 
   private:
 
     std::string segment_id_;
-    std::string object_id_client_;
+    std::string object_id_producer_;
     std::string object_id_consumer_;
     int max_exchange_size_;
     int id_;
@@ -52,8 +51,7 @@ namespace shared_memory {
   };
 
 
-  
-  
+  #include "exchange_manager_producer.hxx"
   
 
 }

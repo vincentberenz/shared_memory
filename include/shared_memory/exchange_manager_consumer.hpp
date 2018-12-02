@@ -8,20 +8,20 @@
 namespace shared_memory {
 
 
+  template<class Serializable>
   class Exchange_manager_consumer {
 
   public:
 
     Exchange_manager_consumer(std::string segment_id,
 			      std::string object_id,
-			      int max_exhange_size,
-			      int serialization_size);
+			      int max_exhange_size);
 
     
     ~Exchange_manager_consumer();
 
     // read shared memory and returns true if there are is data to consume
-    bool read_memory();
+    void read_memory();
     
     bool empty();
 
@@ -45,10 +45,13 @@ namespace shared_memory {
     double *data_;
     int index_;
     int serialization_size_;
-
+    int nb_elements_;
+    int nb_consumed_;
+    
   };
 
   
+  #include "exchange_manager_consumer.hxx"
   
 
 }

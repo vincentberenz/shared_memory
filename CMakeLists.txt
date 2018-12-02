@@ -29,8 +29,6 @@ include_directories(
 
 add_library(shared_memory 
   src/shared_memory.cpp
-  src/exchange_manager_producer.cpp
-  src/exchange_manager_consumer.cpp
   src/exceptions.cpp)
 target_link_libraries(shared_memory
   ${Boost_LIBRARIES}
@@ -56,6 +54,11 @@ target_link_libraries(get_data shared_memory)
 add_executable(cond_var_timeout demos/cond_var_timeout.cpp)
 target_link_libraries(cond_var_timeout shared_memory)
 
+add_executable(exchange_manager
+  demos/four_int_values.cpp
+  demos/exchange_manager_demo.cpp)
+target_link_libraries(exchange_manager shared_memory)
+
 ##############
 # Unit tests #
 ##############
@@ -67,11 +70,14 @@ set_target_properties(tests_executable PROPERTIES
 
 catkin_add_gtest(shared_memory_unit_tests
   tests/main.cpp
-  tests/unit_tests.cpp)
+  tests/unit_tests.cpp
+  tests/unit_tests_exchange_manager.cpp
+  demos/four_int_values.cpp)
 target_link_libraries(shared_memory_unit_tests shared_memory)
 set_target_properties(shared_memory_unit_tests PROPERTIES
   COMPILE_DEFINITIONS
   SHM_PATH_TO_SUPPORT_EXE="${CMAKE_CURRENT_SOURCE_DIR}/tests/bin/tests_executable")
+
 
 ##############
 # BENCHMARKS #

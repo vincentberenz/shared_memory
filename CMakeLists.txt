@@ -29,6 +29,8 @@ include_directories(
 
 add_library(shared_memory 
   src/shared_memory.cpp
+  src/exchange_manager_producer.cpp
+  src/exchange_manager_consumer.cpp
   src/exceptions.cpp)
 target_link_libraries(shared_memory
   ${Boost_LIBRARIES}

@@ -30,15 +30,15 @@ namespace shared_memory {
 
   void Four_int_values::serialize(double *serialized) const {
     std::cout << "SERIALIZE: ";
-    prints(serialized);
     serialized[0]=static_cast<double>(id_);
     for(int i=0;i<4;i++){
       serialized[i+1]=static_cast<double>(values_[i]);
     }
+    prints(serialized);
   }
 
   int Four_int_values::get_id() const {
-    return values_[0];
+    return id_;
   }
 
   int Four_int_values::next_id(){

@@ -21,7 +21,6 @@ namespace shared_memory {
   };
 
 
-
 }
 
 

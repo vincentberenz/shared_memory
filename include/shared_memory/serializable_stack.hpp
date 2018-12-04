@@ -5,6 +5,7 @@
 #include <deque>
 #include <stdexcept>
 #include <cstring>
+#include <iostream>
 
 namespace shared_memory {
 
@@ -21,10 +22,8 @@ namespace shared_memory {
 
   public:
 
-    // for debug usage only
-    
-    double * const get_data_for_debug();
-    int get_data_size_debug();
+    double * const get_data();
+    int get_data_size();
     
   private:
 
@@ -47,14 +46,17 @@ namespace shared_memory {
     ~Serializable_stack_reader();
     void reset(double *data);
     double * const get_data_and_reset();
+    double * const get_data();
+    int get_index();
+    void reset();
+    void reset(int nb_removed);
     bool empty();
     void read(Serializable &get);
     int get_id();
 
   public:
 
-    // for debug usage only
-    int get_data_size_debug();
+    int get_data_size();
     
   private:
     int array_size_;

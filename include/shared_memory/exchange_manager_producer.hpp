@@ -7,7 +7,7 @@
 #include <cstring>	
 
 #include "shared_memory/shared_memory.hpp"
-#include "shared_memory/serializable.hpp"
+#include "shared_memory/serializable_stack.hpp"
 
 namespace shared_memory {
 
@@ -25,28 +25,15 @@ namespace shared_memory {
 
     void set(const Serializable &serializable);
 
-    void write_to_memory();
-
-    void read_consumer_actions_and_update();
-
-    void get_and_purge_consumed_ids(std::deque<int> &get);
-    
+    void update_memory(std::deque<int> &get_consumed_ids);
 
   private:
 
     std::string segment_id_;
     std::string object_id_producer_;
     std::string object_id_consumer_;
-    int max_exchange_size_;
-    int id_;
     int previous_consumer_id_;
-    int max_size_;
-    double *serialization_;
-    double *data_;
-    int index_;
-    int serialization_size_;
-    std::deque<int> consumed_;
-    
+    Serializable_stack<Serializable> items_;
 
   };
 

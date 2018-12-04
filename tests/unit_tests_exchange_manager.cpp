@@ -49,20 +49,26 @@ protected:
 
 
 TEST_F(Exchange_manager_tests,write_and_read){
+  std::deque<int> consumed;
   Four_int_values p1(1,2,3,4);
   Four_int_values p2(5,6,7,8);
-  p1.print();
-  p2.print();
   producer->set(p1);
   producer->set(p2);
-  producer->write_to_memory();
-  consumer->read_memory();
+  producer->update_memory(consumed);
+  ASSERT_EQ(consumed.size(),0);
+  consumer->update_memory();
   Four_int_values c1;
   Four_int_values c2;
   consumer->consume(c1);
   consumer->consume(c2);
-  c1.print();
-  c2.print();
+  consumer->update_memory();
   ASSERT_EQ(true,p1.same(c1));
   ASSERT_EQ(true,p2.same(c2));
+  producer->update_memory(consumed);
+  ASSERT_EQ(consumed.size(),2);
+  ASSERT_EQ(consumed[0],p1.get_id());
+  ASSERT_EQ(consumed[1],p2.get_id());
 }
+
+
+

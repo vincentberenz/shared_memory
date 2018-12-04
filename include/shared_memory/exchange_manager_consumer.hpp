@@ -3,7 +3,7 @@
 
 #include <string>
 #include "shared_memory/shared_memory.hpp"
-#include "shared_memory/serializable.hpp"
+#include "shared_memory/serializable_stack.hpp"
 
 namespace shared_memory {
 
@@ -21,15 +21,17 @@ namespace shared_memory {
     ~Exchange_manager_consumer();
 
     // read shared memory and returns true if there are is data to consume
-    void read_memory();
+    void update_memory();
     
     bool empty();
 
+    bool ready_to_consume();
+    
     void consume(Serializable &serializable);
 
     void write_to_memory();
     
-    
+    bool read_to_consume();
     
 
   private:
@@ -37,16 +39,12 @@ namespace shared_memory {
     std::string segment_id_;
     std::string object_id_producer_;
     std::string object_id_consumer_;
-    int max_exchange_size_;
-    int id_;
+    Serializable_stack_reader<Serializable> items_;
     int consumer_id_;
     int previous_producer_id_;
-    int max_size_;
-    double *data_;
-    int index_;
-    int serialization_size_;
     int nb_elements_;
     int nb_consumed_;
+    bool ready_to_consume_;
     
   };
 

@@ -35,7 +35,7 @@ static void print_data(double *d, int size){
 TEST_F(Serializable_stack_tests,size_array){
   Serializable_stack<Four_int_values> stack(BUFFER_SIZE);
   Serializable_stack_reader<Four_int_values> stack_reader(BUFFER_SIZE);
-  ASSERT_EQ(stack.get_data_size_debug(),stack_reader.get_data_size_debug());
+  ASSERT_EQ(stack.get_data_size(),stack_reader.get_data_size());
 }
 
 
@@ -46,9 +46,9 @@ TEST_F(Serializable_stack_tests,write_and_read){
   Four_int_values p2(5,6,7,8);
   stack.add(p1);
   stack.add(p2);
-  double *data_stack = stack.get_data_for_debug();
+  double *data_stack = stack.get_data();
   double *data_reader = stack_reader.get_data_and_reset();
-  copy_data(data_stack,data_reader,stack.get_data_size_debug());
+  copy_data(data_stack,data_reader,stack.get_data_size());
   ASSERT_EQ(stack_reader.empty(),false);
   Four_int_values e1,e2;
   stack_reader.read(e1);
@@ -82,36 +82,26 @@ TEST_F(Serializable_stack_tests,items_removals){
   Four_int_values p2(5,6,7,8);
   stack.add(p1);
   stack.add(p2);
-  double *data_stack = stack.get_data_for_debug();
+  double *data_stack = stack.get_data();
   double *data_reader = stack_reader.get_data_and_reset();
-  copy_data(data_stack,data_reader,stack.get_data_size_debug());
+  copy_data(data_stack,data_reader,stack.get_data_size());
   Four_int_values e1,e2;
   stack_reader.read(e1);
   stack_reader.read(e2);
   std::deque<int> removed_ids;
   stack.remove(2,removed_ids);
   ASSERT_EQ(removed_ids.size(),2);
-  int foo = 3;
-  std::cout << "IN | " << removed_ids.back()<< " | " << foo << "\n";
-  ASSERT_EQ(removed_ids.back(),foo);
-  std::cout << "OUT\n";
-  std::cout << "B | " << removed_ids.back()<< " | " << e1.get_id() << "\n";
-  ASSERT_EQ(removed_ids.back(),e1.get_id());
-  std::cout << "C\n";
-  removed_ids.pop_back();
-  std::cout << "D\n";
   ASSERT_EQ(removed_ids.back(),e2.get_id());
-  std::cout << "E\n";
   removed_ids.pop_back();
-  std::cout << "F\n";
+  ASSERT_EQ(removed_ids.back(),e1.get_id());
+  removed_ids.pop_back();
   ASSERT_EQ(removed_ids.empty(),true);
-  std::cout << "G\n";
   Four_int_values p3(9,10,11,12);
   stack.add(p3);
-  copy_data(data_stack,data_reader,stack.get_data_size_debug());
+  data_reader = stack_reader.get_data_and_reset();
+  copy_data(data_stack,data_reader, stack.get_data_size());
   Four_int_values e3;
   stack_reader.read(e3);
   ASSERT_EQ(p3.same(e3),true);
-  
 }
 

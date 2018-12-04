@@ -72,7 +72,7 @@ catkin_add_gtest(shared_memory_unit_tests
   tests/main.cpp
   tests/unit_tests.cpp
   tests/unit_tests_serializable_stack.cpp
-  #tests/unit_tests_exchange_manager.cpp
+  tests/unit_tests_exchange_manager.cpp
   demos/four_int_values.cpp)
 target_link_libraries(shared_memory_unit_tests shared_memory)
 set_target_properties(shared_memory_unit_tests PROPERTIES

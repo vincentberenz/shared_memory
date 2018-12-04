@@ -73,7 +73,7 @@ void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get
   // shifting the full memory to the left, over what was holding items to delete
   std::memcpy( data_+2*sizeof(double),
 	       data_+2*sizeof(double)+nb_items*items_serialization_size_*sizeof(double),
-	       nb_items * items_serialization_size_ * sizeof(double) );
+	       nb_items_ * items_serialization_size_ * sizeof(double) );
 
   // updating data with new current number of items
   data_[1] = nb_items_;
@@ -81,12 +81,12 @@ void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get
 }
 
 template <class Serializable>
-double * const Serializable_stack<Serializable>::get_data_for_debug(){
+double * const Serializable_stack<Serializable>::get_data(){
   return data_;
 }
 
 template <class Serializable>
-int Serializable_stack<Serializable>::get_data_size_debug(){
+int Serializable_stack<Serializable>::get_data_size(){
   return array_size_;
 }
 
@@ -101,6 +101,7 @@ template <class Serializable>
 Serializable_stack_reader<Serializable>::Serializable_stack_reader(int max_items){
   array_size_ = 2+Serializable::serialization_size*max_items;
   data_ = new double[array_size_];
+  index_ = 0;
 }
 
 template <class Serializable>
@@ -110,13 +111,34 @@ Serializable_stack_reader<Serializable>::~Serializable_stack_reader(){
 
 template <class Serializable>
 double * const Serializable_stack_reader<Serializable>::get_data_and_reset(){
-  index_ = 0;
+  this->reset();
   return data_;
 }
 
 template <class Serializable>
+double * const Serializable_stack_reader<Serializable>::get_data(){
+  return data_;
+}
+
+template <class Serializable>
+void Serializable_stack_reader<Serializable>::reset(){
+  index_ = 0;
+}
+
+template <class Serializable>
+void Serializable_stack_reader<Serializable>::reset(int nb_removed){
+  index_ -= nb_removed;
+}
+
+
+template <class Serializable>
 int Serializable_stack_reader<Serializable>::get_id(){
   return data_[0];
+}
+
+template <class Serializable>
+int Serializable_stack_reader<Serializable>::get_index(){
+  return index_;
 }
 
 template <class Serializable>
@@ -137,7 +159,7 @@ void Serializable_stack_reader<Serializable>::read(Serializable &get){
 }
 
 template <class Serializable>
-int Serializable_stack_reader<Serializable>::get_data_size_debug(){
+int Serializable_stack_reader<Serializable>::get_data_size(){
   return array_size_;
 }
 

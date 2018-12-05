@@ -18,6 +18,12 @@ namespace shared_memory {
     }
     std::cout << "\n";
   }
+
+  void Four_int_values::print() const {
+    std::cout << id_ << " | ";
+    for(int i=0;i<4;i++) std::cout << values_[i];
+    std::cout << "\n";
+  }
   
   void Four_int_values::create(double *serialized){
     id_ = static_cast<int>(serialized[0]);
@@ -56,12 +62,5 @@ namespace shared_memory {
     return true;
   }
 
-  void Four_int_values::print() const{
-    std::cout << id_ << " | ";
-    for(int i=0;i<4;i++){
-      std::cout << values_[i] << " ";
-    }
-    std::cout << std::endl;
-  }
   
 }

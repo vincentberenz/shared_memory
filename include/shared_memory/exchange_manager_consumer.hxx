@@ -9,8 +9,17 @@
     object_id_consumer_ = object_id+"_consumer";
     object_id_producer_ = object_id+"_producer";
     previous_producer_id_=-1;
-    ready_to_consume_ = true;
+    ready_to_consume_ = false;
     nb_consumed_ = 0;
+
+    // init of shared memory
+    double foo[2];
+    foo[0]=static_cast<double>(1);
+    foo[1]=static_cast<double>(0);
+    shared_memory::set(segment_id_,object_id_consumer_,foo,2);
+    shared_memory::set(segment_id_,object_id_producer_,
+		       items_.get_data(),items_.get_data_size());
+
   }
 
 

@@ -29,10 +29,6 @@ namespace shared_memory {
     
     void consume(Serializable &serializable);
 
-    void write_to_memory();
-    
-    bool read_to_consume();
-    
 
   private:
 

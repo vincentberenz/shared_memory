@@ -34,8 +34,9 @@ Serializable_stack<Serializable>::~Serializable_stack(){
 }
 
 
+// return true if full after addition
 template <class Serializable>
-void Serializable_stack<Serializable>::add(const Serializable &serializable){
+bool Serializable_stack<Serializable>::add(const Serializable &serializable){
 
   if (nb_items_>=items_max_numbers_){
     throw std::overflow_error("serializable stack: memory overflow when setting a new item");
@@ -49,7 +50,10 @@ void Serializable_stack<Serializable>::add(const Serializable &serializable){
   data_[1]++;
 
   nb_items_++;
-  
+
+  if (nb_items_==items_max_numbers_) return true;
+
+  return false;
 }
 
 

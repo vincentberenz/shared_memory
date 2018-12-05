@@ -23,7 +23,7 @@ namespace shared_memory {
     
     ~Exchange_manager_producer();
 
-    void set(const Serializable &serializable);
+    bool set(const Serializable &serializable);
 
     void update_memory(std::deque<int> &get_consumed_ids);
 

@@ -54,10 +54,15 @@ target_link_libraries(get_data shared_memory)
 add_executable(cond_var_timeout demos/cond_var_timeout.cpp)
 target_link_libraries(cond_var_timeout shared_memory)
 
-add_executable(exchange_manager
+add_executable(exchange_manager_producer
   demos/four_int_values.cpp
-  demos/exchange_manager_demo.cpp)
-target_link_libraries(exchange_manager shared_memory)
+  demos/exchange_manager_producer.cpp)
+target_link_libraries(exchange_manager_producer shared_memory)
+
+add_executable(exchange_manager_consumer
+  demos/four_int_values.cpp
+  demos/exchange_manager_consumer.cpp)
+target_link_libraries(exchange_manager_consumer shared_memory)
 
 ##############
 # Unit tests #

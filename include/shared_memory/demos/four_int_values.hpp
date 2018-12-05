@@ -1,3 +1,6 @@
+#ifndef FOUR_INT_VALUES_HPP
+#define FOUR_INT_VALUES_HPP
+
 #include "shared_memory/serializable.hpp"
 #include <iostream>
 
@@ -13,7 +16,7 @@ namespace shared_memory {
     void create(double *serialized_data);
     void serialize(double *serialized) const;
     int get_id() const;
-
+    
   public:
 
     // stored values are all equals, in same order
@@ -38,9 +41,6 @@ namespace shared_memory {
     
   };
 
-
-
-
-
-
 }
+
+#endif

@@ -26,8 +26,9 @@ Exchange_manager_producer<Serializable>::~Exchange_manager_producer(){}
   
 
 template <class Serializable>
-void Exchange_manager_producer<Serializable>::set(const Serializable &serializable){
-  items_.add(serializable);
+bool Exchange_manager_producer<Serializable>::set(const Serializable &serializable){
+  bool full = items_.add(serializable);
+  return full;
 }
 
 

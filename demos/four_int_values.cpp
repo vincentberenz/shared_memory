@@ -21,7 +21,7 @@ namespace shared_memory {
 
   void Four_int_values::print() const {
     std::cout << id_ << " | ";
-    for(int i=0;i<4;i++) std::cout << values_[i];
+    for(int i=0;i<4;i++) std::cout << values_[i] << " ";
     std::cout << "\n";
   }
   

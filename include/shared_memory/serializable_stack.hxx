@@ -148,6 +148,7 @@ int Serializable_stack_reader<Serializable>::get_index(){
 template <class Serializable>
 bool Serializable_stack_reader<Serializable>::empty(){
   int nb_items = data_[1];
+  std::cout << "\tempty: nb items: " << nb_items << "\tindex: " << index_ << "\n"; 
   if(index_>=nb_items){
     return true;
   }

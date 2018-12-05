@@ -57,7 +57,7 @@ void execute(){
     // note : faster than producer,
     //        as otherwise the buffer of the producer
     //        would end up overflowing
-    usleep(1000000);
+    usleep(3000000);
 
   }
   

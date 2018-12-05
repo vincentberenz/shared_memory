@@ -9,12 +9,12 @@
     object_id_consumer_ = object_id+"_consumer";
     object_id_producer_ = object_id+"_producer";
     previous_producer_id_=-1;
-    ready_to_consume_ = false;
+    ready_to_consume_ = true;
     nb_consumed_ = 0;
 
     // init of shared memory
     double foo[2];
-    foo[0]=static_cast<double>(1);
+    foo[0]=static_cast<double>(0); 
     foo[1]=static_cast<double>(0);
     shared_memory::set(segment_id_,object_id_consumer_,foo,2);
     shared_memory::set(segment_id_,object_id_producer_,
@@ -30,48 +30,54 @@
   template <class Serializable>
   void Exchange_manager_consumer<Serializable>::update_memory(){
 
-    static double to_producer[2];
+    std::cout << "\n";
 
-    if (ready_to_consume_ && nb_consumed_>0){
+    // some items have been consumed, we need to inform the producer
+    if (nb_consumed_>0){
+      static double to_producer[2];
+      std::cout << "\tinforming producer " << nb_consumed_ << " items have been consumed\n";
+      static int id = 1;
+      id++;
       // items have been consumed, informing the producer
-      to_producer[0]=static_cast<double>(items_.get_id());
+      to_producer[0]=static_cast<double>(id);
       to_producer[1]=static_cast<double>(nb_consumed_);
       shared_memory::set(segment_id_,object_id_consumer_,to_producer,2);
+      // we need to wait for the producer to update the command stack
+      // before we can resume operation
       ready_to_consume_ = false;
+      // when operation will be resumed, the stack would have shifted
+      // (because of consumed items removal), so updating our pointer
+      // in the item stack
       nb_consumed_=0;
       return;
     }
-    
-    // check if the producer read consumed data ...
-    shared_memory::get(segment_id_,object_id_consumer_,to_producer,2);
-    // which is the case only if to_producer[0] is negative
-    if (static_cast<int>(to_producer[0])>0) {
-      ready_to_consume_ = false;
-      return;
+
+    // we are waiting for the producer to acknowledge
+    // it removed consume items from the stack
+    if (!ready_to_consume_){
+      static double from_producer[2];      
+      shared_memory::get(segment_id_,object_id_consumer_,
+			 items_.get_data(),
+			 items_.get_data_size());
+      std::cout << "waiting feedback from producer: " << from_producer[0] << "\n";
+      bool consumed_items_removed = (from_producer[0]<0);
+      if (consumed_items_removed){
+	// the producer removed consumed items,
+	// reseting the pointer to the stack and
+	// resuming operation
+	int nb_removed = static_cast<int>(from_producer[1]);
+	items_.reset(nb_removed);
+	ready_to_consume_ = true;
+      }
     }
-
-    // the producer removed consumed items from the
-    // stack. 
     
-    // updating the stack of items from the memory
-    shared_memory::get(segment_id_,object_id_producer_,
-		       items_.get_data(),
-		       items_.get_data_size());
-
-    // first value is an id that increased each time
-    // the producer wrote new data in memory
-
-    int id = items_.get_id();
-    if (id==previous_producer_id_){
-      throw std::runtime_error("exchange_manager_producer removed data, but did not update its id. This is a bug that should not happen.");
+    // updating stack of items, if operation running
+    if(ready_to_consume_){
+      shared_memory::get(segment_id_,object_id_producer_,
+			 items_.get_data(),
+			 items_.get_data_size());
     }
-
-    // new values, and the consumer shifted
-    // all data to the start of the stack,
-    // so reseting the index
-    int nb_removed = static_cast<int>(to_producer[1]);
-    items_.reset(nb_removed);
-    ready_to_consume_=true;
+    
   }
 
   template <class Serializable>
@@ -81,7 +87,8 @@
 
   template <class Serializable>
   bool Exchange_manager_consumer<Serializable>::empty(){
-    return items_.empty();
+    bool e = items_.empty();
+    return e;
   }
 
   template <class Serializable>
@@ -91,4 +98,5 @@
     }
     items_.read(serializable);
     nb_consumed_+=1;
+    std::cout << "consume ("<<nb_consumed_<<")\n";
   }

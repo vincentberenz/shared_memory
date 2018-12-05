@@ -74,7 +74,7 @@ void execute(){
     // note : slower than consumer,
     //        as otherwise the buffer
     //        would end up overflowing
-    usleep(3000000);
+    usleep(2000);
 
   }
   

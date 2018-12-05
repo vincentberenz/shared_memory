@@ -13,29 +13,30 @@
     nb_consumed_ = 0;
 
     // init of shared memory
+    shared_memory::clear_shared_memory(segment_id);
+    shared_memory::delete_segment(segment_id);
     double foo[2];
     foo[0]=static_cast<double>(0); 
     foo[1]=static_cast<double>(0);
     shared_memory::set(segment_id_,object_id_consumer_,foo,2);
     shared_memory::set(segment_id_,object_id_producer_,
 		       items_.get_data(),items_.get_data_size());
-
   }
 
 
   template <class Serializable>
-  Exchange_manager_consumer<Serializable>::~Exchange_manager_consumer(){}
+  Exchange_manager_consumer<Serializable>::~Exchange_manager_consumer(){
+    shared_memory::clear_shared_memory(segment_id_);
+    shared_memory::delete_segment(segment_id_);
+  }
 
 
   template <class Serializable>
   void Exchange_manager_consumer<Serializable>::update_memory(){
 
-    std::cout << "\n";
-
     // some items have been consumed, we need to inform the producer
     if (nb_consumed_>0){
       static double to_producer[2];
-      std::cout << "\tinforming producer " << nb_consumed_ << " items have been consumed\n";
       static int id = 1;
       id++;
       // items have been consumed, informing the producer
@@ -57,16 +58,14 @@
     if (!ready_to_consume_){
       static double from_producer[2];      
       shared_memory::get(segment_id_,object_id_consumer_,
-			 items_.get_data(),
-			 items_.get_data_size());
-      std::cout << "waiting feedback from producer: " << from_producer[0] << "\n";
+			 from_producer,2);
       bool consumed_items_removed = (from_producer[0]<0);
       if (consumed_items_removed){
 	// the producer removed consumed items,
 	// reseting the pointer to the stack and
 	// resuming operation
 	int nb_removed = static_cast<int>(from_producer[1]);
-	items_.reset(nb_removed);
+	items_.reset();
 	ready_to_consume_ = true;
       }
     }
@@ -98,5 +97,4 @@
     }
     items_.read(serializable);
     nb_consumed_+=1;
-    std::cout << "consume ("<<nb_consumed_<<")\n";
   }

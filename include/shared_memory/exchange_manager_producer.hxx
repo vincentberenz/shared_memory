@@ -28,8 +28,6 @@ bool Exchange_manager_producer<Serializable>::set(const Serializable &serializab
 template <class Serializable>
 void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> &get_consumed_ids){
 
-  std::cout << "\n";
-  
   // read shared memory to check if the consumer
   // did consume any data
   static double from_consumer[2];
@@ -48,20 +46,18 @@ void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> &get
     // the consumer did read some data, removing them
     // from the stack, and save their ids in get_consumed_ids
     previous_consumer_id_ = consumer_id;
-    std::cout << "removing: " << nb_to_remove << " items\n";
     items_.remove(nb_to_remove,get_consumed_ids);
-
+    shared_memory::set(segment_id_,object_id_producer_,
+		       items_.get_data(),items_.get_data_size());
     // informing the consumer that we are aware these elements
     // have been consumed
     from_consumer[0]=-1.0;
     from_consumer[1]=0.0;
-    std::cout << "informing consumer\n";
     shared_memory::set(segment_id_,object_id_consumer_,from_consumer,2);
     return;
   }
   
   // updating item stack in memory
-  std::cout << "writing stack << " << items_.get_data()[1] <<  " << \n";
   shared_memory::set(segment_id_,object_id_producer_,
 		     items_.get_data(),items_.get_data_size());
 

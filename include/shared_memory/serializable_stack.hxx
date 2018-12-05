@@ -73,11 +73,12 @@ void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get
   }
 
   nb_items_ -= nb_items;
-  
+
   // shifting the full memory to the left, over what was holding items to delete
-  std::memcpy( data_+2*sizeof(double),
-	       data_+2*sizeof(double)+nb_items*items_serialization_size_*sizeof(double),
-	       nb_items_ * items_serialization_size_ * sizeof(double) );
+  std::memcpy( data_+2,
+	       data_+2+nb_items*items_serialization_size_,
+	       nb_items_ * items_serialization_size_ * sizeof(double));
+
 
   // updating data with new current number of items
   data_[1] = nb_items_;
@@ -148,7 +149,6 @@ int Serializable_stack_reader<Serializable>::get_index(){
 template <class Serializable>
 bool Serializable_stack_reader<Serializable>::empty(){
   int nb_items = data_[1];
-  std::cout << "\tempty: nb items: " << nb_items << "\tindex: " << index_ << "\n"; 
   if(index_>=nb_items){
     return true;
   }

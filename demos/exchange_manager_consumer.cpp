@@ -27,13 +27,12 @@ static int _get_int(int max){
 void execute(){
 
   srand(time(NULL));
-  
+
   // Four_int_values is a subclass of shared_memory/serializable,
   // i.e an object which can be serialized as an array of double
   shared_memory::Exchange_manager_consumer<shared_memory::Four_int_values> exchange ( SEGMENT_ID,
 										      OBJECT_ID,
 										      EXCHANGE_SIZE );
-
   while(RUNNING){
 
     // values serialized in shared memory will be deserialized in this object
@@ -57,7 +56,7 @@ void execute(){
     // note : faster than producer,
     //        as otherwise the buffer of the producer
     //        would end up overflowing
-    usleep(3000000);
+    usleep(1000);
 
   }
   

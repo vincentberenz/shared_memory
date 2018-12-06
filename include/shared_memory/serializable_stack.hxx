@@ -45,11 +45,13 @@ bool Serializable_stack<Serializable>::add(const Serializable &serializable){
   int data_index = 2+nb_items_*items_serialization_size_;
 
   serializable.serialize(&(data_[data_index]));
-  
-  data_[0]++;
-  data_[1]++;
 
   nb_items_++;
+  
+  data_[0]++;
+  data_[1]=nb_items_;
+
+
 
   if (nb_items_==items_max_numbers_) return true;
 
@@ -75,12 +77,13 @@ void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get
   nb_items_ -= nb_items;
 
   // shifting the full memory to the left, over what was holding items to delete
-  std::memcpy( data_+2,
+  std::memmove( data_+2,
 	       data_+2+nb_items*items_serialization_size_,
 	       nb_items_ * items_serialization_size_ * sizeof(double));
 
 
   // updating data with new current number of items
+  data_[0]++;
   data_[1] = nb_items_;
   
 }

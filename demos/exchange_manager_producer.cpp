@@ -36,24 +36,30 @@ void execute(){
   // by the consummer
   std::deque<int> consumed_ids;
 
+  int c = 1;
+  
   while(RUNNING){
 
     int nb_items = _get_int(5);
 
     for(int item=0;item<nb_items;item++){
 
+      /*
       int v1 = _get_int(10);
       int v2 = _get_int(10);
       int v3 = _get_int(10);
       int v4 = _get_int(10);
-      
-      shared_memory::Four_int_values fiv(v1,v2,v3,v4);
+      */
+
+      shared_memory::Four_int_values fiv(c,c,c,c);
 
       // serializing fiv and writing it to shared memory
       exchange.set(fiv);
 
       std::cout << "produced: " << fiv.get_id() << " | ";
-      std::cout << v1 << " " << v2 << " " << v3 << " " << v4 << "\n";
+      //std::cout << v1 << " " << v2 << " " << v3 << " " << v4 << "\n";
+      std::cout << c << " " << c << " " << c << " " << c << "\n";
+      c++;
       
     }
 

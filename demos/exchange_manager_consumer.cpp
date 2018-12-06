@@ -33,6 +33,12 @@ void execute(){
   shared_memory::Exchange_manager_consumer<shared_memory::Four_int_values> exchange ( SEGMENT_ID,
 										      OBJECT_ID,
 										      EXCHANGE_SIZE );
+
+
+  // for error detection
+  int previous_id = -1;
+  int id;
+  
   while(RUNNING){
 
     // values serialized in shared memory will be deserialized in this object
@@ -46,6 +52,14 @@ void execute(){
       if (exchange.ready_to_consume() && !exchange.empty()){
 	exchange.consume(fiv);
 	fiv.print();
+	id = fiv.get_id();
+	if(previous_id<0) previous_id = (id-1);
+	if (id!=(previous_id+1)){
+	  std::cout << "\n\nERROR: did the consumer miss item(s) ?\n\n";
+	  RUNNING=false;
+	  break;
+	}
+	previous_id=id;
       }
 
     }

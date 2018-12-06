@@ -46,9 +46,6 @@
       // we need to wait for the producer to update the command stack
       // before we can resume operation
       ready_to_consume_ = false;
-      // when operation will be resumed, the stack would have shifted
-      // (because of consumed items removal), so updating our pointer
-      // in the item stack
       nb_consumed_=0;
       return;
     }
@@ -65,7 +62,7 @@
 	// reseting the pointer to the stack and
 	// resuming operation
 	int nb_removed = static_cast<int>(from_producer[1]);
-	items_.reset();
+	items_.reset(nb_removed);
 	ready_to_consume_ = true;
       }
     }
@@ -76,7 +73,7 @@
 			 items_.get_data(),
 			 items_.get_data_size());
     }
-    
+
   }
 
   template <class Serializable>
@@ -86,8 +83,7 @@
 
   template <class Serializable>
   bool Exchange_manager_consumer<Serializable>::empty(){
-    bool e = items_.empty();
-    return e;
+    return items_.empty();
   }
 
   template <class Serializable>

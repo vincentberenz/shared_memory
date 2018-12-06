@@ -20,8 +20,7 @@ Exchange_manager_producer<Serializable>::~Exchange_manager_producer(){}
 
 template <class Serializable>
 bool Exchange_manager_producer<Serializable>::set(const Serializable &serializable){
-  bool full = items_.add(serializable);
-  return full;
+  return items_.add(serializable);
 }
 
 
@@ -52,16 +51,15 @@ void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> &get
     // informing the consumer that we are aware these elements
     // have been consumed
     from_consumer[0]=-1.0;
-    from_consumer[1]=0.0;
+    from_consumer[1]=static_cast<double>(nb_to_remove);
     shared_memory::set(segment_id_,object_id_consumer_,from_consumer,2);
+
     return;
   }
   
   // updating item stack in memory
   shared_memory::set(segment_id_,object_id_producer_,
 		     items_.get_data(),items_.get_data_size());
-
-  
 
 }
 

@@ -11,7 +11,15 @@ Exchange_manager_producer<Serializable>::Exchange_manager_producer(std::string s
   
   previous_consumer_id_ = 0;
 
-  
+
+  // init of shared memory
+  double foo[2];
+  foo[0]=static_cast<double>(0); 
+  foo[1]=static_cast<double>(0);
+  shared_memory::set(segment_id_,object_id_consumer_,foo,2);
+  shared_memory::set(segment_id_,object_id_producer_,
+		     items_.get_data(),items_.get_data_size());
+
 }
 
 template <class Serializable>  
@@ -25,7 +33,7 @@ bool Exchange_manager_producer<Serializable>::set(const Serializable &serializab
 
 
 template <class Serializable>
-void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> &get_consumed_ids){
+void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> *get_consumed_ids){
 
   // read shared memory to check if the consumer
   // did consume any data
@@ -56,12 +64,25 @@ void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> &get
 
     return;
   }
-  
+
   // updating item stack in memory
   shared_memory::set(segment_id_,object_id_producer_,
 		     items_.get_data(),items_.get_data_size());
 
+
 }
+
+template <class Serializable>
+void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> &get_consumed_ids){
+  this->update_memory(&get_consumed_ids);
+}
+
+template <class Serializable>
+void Exchange_manager_producer<Serializable>::update_memory(){
+  this->update_memory(NULL);
+}
+
+
 
 
 

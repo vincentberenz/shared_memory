@@ -26,6 +26,9 @@ namespace shared_memory {
     bool set(const Serializable &serializable);
 
     void update_memory(std::deque<int> &get_consumed_ids);
+    void update_memory();
+    void update_memory(std::deque<int> *get_consumed_ids);
+
 
   private:
 

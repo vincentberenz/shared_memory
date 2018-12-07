@@ -18,7 +18,10 @@ namespace shared_memory {
     ~Serializable_stack();
 
     bool add(const Serializable &serializable);
+
     void remove(int nb_items, std::deque<int> &get_removed_ids);
+    void remove(int nb_items);
+    void remove(int nb_items, std::deque<int> *get_removed_ids);
 
   public:
 

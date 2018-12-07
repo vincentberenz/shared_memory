@@ -60,7 +60,7 @@ bool Serializable_stack<Serializable>::add(const Serializable &serializable){
 
 
 template <class Serializable>
-void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get_removed_ids){
+void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> *get_removed_ids){
 
   // we can not remove more items than currently contained
   if(nb_items>nb_items_) nb_items = nb_items_;
@@ -71,7 +71,9 @@ void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get
   for(int i=0;i<nb_items;i++){
     int id_index = 2+i*items_serialization_size_+Serializable::serialization_id_index;
     int id = static_cast<int>(data_[id_index]);
-    get_removed_ids.push_back(id);
+    if (get_removed_ids){
+      get_removed_ids->push_back(id);
+    }
   }
 
   nb_items_ -= nb_items;
@@ -87,6 +89,19 @@ void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get
   data_[1] = nb_items_;
   
 }
+
+
+template <class Serializable>
+void Serializable_stack<Serializable>::remove(int nb_items, std::deque<int> &get_removed_ids){
+  this->remove(nb_items,&get_removed_ids);
+  
+}
+
+template <class Serializable>
+void Serializable_stack<Serializable>::remove(int nb_items){
+  this->remove(nb_items,NULL);
+}
+
 
 template <class Serializable>
 double * const Serializable_stack<Serializable>::get_data(){

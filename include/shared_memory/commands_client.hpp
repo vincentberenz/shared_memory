@@ -20,6 +20,7 @@ namespace shared_memory {
     
     ~Exchange_manager_consumer();
 
+    // read shared memory and returns true if there are is data to consume
     void update_memory();
     
     bool empty();

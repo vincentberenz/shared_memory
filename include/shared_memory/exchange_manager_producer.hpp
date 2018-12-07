@@ -25,6 +25,10 @@ namespace shared_memory {
 
     bool set(const Serializable &serializable);
 
+    bool consumer_started() const;
+
+    void clean_memory();
+    
     void update_memory(std::deque<int> &get_consumed_ids);
     void update_memory();
     void update_memory(std::deque<int> *get_consumed_ids);
@@ -37,7 +41,8 @@ namespace shared_memory {
     std::string object_id_consumer_;
     int previous_consumer_id_;
     Serializable_stack<Serializable> items_;
-
+    bool consumer_started_;
+    
   };
 
 

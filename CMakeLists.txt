@@ -29,7 +29,8 @@ include_directories(
 
 add_library(shared_memory 
   src/shared_memory.cpp
-  src/exceptions.cpp)
+  src/exceptions.cpp
+  src/simpleId.cpp)
 target_link_libraries(shared_memory
   ${Boost_LIBRARIES}
 )
@@ -53,6 +54,12 @@ target_link_libraries(get_data shared_memory)
 
 add_executable(cond_var_timeout demos/cond_var_timeout.cpp)
 target_link_libraries(cond_var_timeout shared_memory)
+
+add_executable(exchange_manager_clean
+  demos/four_int_values.cpp
+  demos/exchange_manager_clean.cpp)
+target_link_libraries(exchange_manager_clean shared_memory)
+
 
 add_executable(exchange_manager_producer
   demos/four_int_values.cpp

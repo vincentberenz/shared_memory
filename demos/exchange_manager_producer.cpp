@@ -13,9 +13,8 @@
 
 static bool RUNNING = true;
 
-void cleaning_memory(int){
+void stop(int){
   RUNNING=false;
-  shared_memory::delete_segment(SEGMENT_ID);
 }
 
 static int _get_int(int max){
@@ -40,42 +39,53 @@ void execute(){
   
   while(RUNNING){
 
-    int nb_items = _get_int(5);
+    if ( exchange.consumer_started() ) {
+    
+      int nb_items = _get_int(5);
 
-    for(int item=0;item<nb_items;item++){
+      for(int item=0;item<nb_items;item++){
 
-      /*
-      int v1 = _get_int(10);
-      int v2 = _get_int(10);
-      int v3 = _get_int(10);
-      int v4 = _get_int(10);
-      */
+	/*
+	  int v1 = _get_int(10);
+	  int v2 = _get_int(10);
+	  int v3 = _get_int(10);
+	  int v4 = _get_int(10);
+	*/
 
-      shared_memory::Four_int_values fiv(c,c,c,c);
+	shared_memory::Four_int_values fiv(c,c,c,c);
 
-      // serializing fiv and writing it to shared memory
-      exchange.set(fiv);
+	// serializing fiv and writing it to shared memory
+	exchange.set(fiv);
 
-      std::cout << "produced: " << fiv.get_id() << " | ";
-      //std::cout << v1 << " " << v2 << " " << v3 << " " << v4 << "\n";
-      std::cout << c << " " << c << " " << c << " " << c << "\n";
-      c++;
+	std::cout << "produced: " << fiv.get_id() << " | ";
+	//std::cout << v1 << " " << v2 << " " << v3 << " " << v4 << "\n";
+	std::cout << c << " " << c << " " << c << " " << c << "\n";
+	c++;
       
-    }
+      }
 
-    // writting serialized items in shared memory,
-    // and reading from shared_memory which
-    // items have been consumed
-    exchange.update_memory(consumed_ids);
+      // writting serialized items in shared memory,
+      // and reading from shared_memory which
+      // items have been consumed
+      exchange.update_memory(consumed_ids);
 
-    // printing consumed item ids to console
-    std::cout << "\n";
-    while (!consumed_ids.empty()){
-      int id = consumed_ids.front();
-      consumed_ids.pop_front();
-      std::cout << "\t\tconsumed: " << id << "\n";
+      // printing consumed item ids to console
+      std::cout << "\n";
+      while (!consumed_ids.empty()){
+	int id = consumed_ids.front();
+	consumed_ids.pop_front();
+	std::cout << "\t\tconsumed: " << id << "\n";
+      }
+      std::cout << "\n";
+
+    } else {
+      static bool printed=false;
+      if(!printed){
+	std::cout << "\nwaiting for consumer to start ...\n";
+	printed=true;
+      }
+      exchange.update_memory();
     }
-    std::cout << "\n";
 
     // note : slower than consumer,
     //        as otherwise the buffer
@@ -89,12 +99,11 @@ void execute(){
 
 int main(){
 
-  cleaning_memory(0);
   RUNNING = true;
 
   // cleaning and exit on ctrl+c 
   struct sigaction cleaning;
-  cleaning.sa_handler = cleaning_memory;
+  cleaning.sa_handler = stop;
   sigemptyset(&cleaning.sa_mask);
   cleaning.sa_flags = 0;
   sigaction(SIGINT, &cleaning, nullptr);

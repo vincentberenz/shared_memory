@@ -20,6 +20,8 @@ namespace shared_memory {
     
     ~Exchange_manager_consumer();
 
+    void clean_memory();
+    
     void update_memory();
     
     bool empty();

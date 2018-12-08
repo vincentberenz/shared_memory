@@ -22,7 +22,7 @@ namespace shared_memory {
 
     void clean_memory();
     
-    void update_memory();
+    void update_memory(bool verbose=false);
     
     bool empty();
 
@@ -32,10 +32,14 @@ namespace shared_memory {
 
 
   private:
+    void reset_if_producer_stopped();
+      
+  private:
 
     std::string segment_id_;
     std::string object_id_producer_;
     std::string object_id_consumer_;
+    std::string object_id_reset_;
     Serializable_stack_reader<Serializable> items_;
     int consumer_id_;
     int previous_producer_id_;

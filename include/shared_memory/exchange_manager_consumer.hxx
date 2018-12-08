@@ -8,6 +8,7 @@ Exchange_manager_consumer<Serializable>::Exchange_manager_consumer(std::string s
   segment_id_ = segment_id;
   object_id_consumer_ = object_id+"_consumer";
   object_id_producer_ = object_id+"_producer";
+  object_id_reset_ = object_id+"_reset";
   previous_producer_id_=-1;
   ready_to_consume_ = true;
   nb_consumed_ = 0;
@@ -16,10 +17,38 @@ Exchange_manager_consumer<Serializable>::Exchange_manager_consumer(std::string s
   double foo[2];
   foo[0]=static_cast<double>(0); 
   foo[1]=static_cast<double>(0);
+  double* data = items_.get_data();
+  data[0]=-1;
+  data[1]=0;
   shared_memory::set(segment_id_,object_id_consumer_,foo,2);
   shared_memory::set(segment_id_,object_id_producer_,
-		     items_.get_data(),items_.get_data_size());
+		     data,items_.get_data_size());
+  shared_memory::set(segment_id_,object_id_reset_,false);
+		     
 }
+
+template <class Serializable>
+void Exchange_manager_consumer<Serializable>::reset_if_producer_stopped(){
+  bool should_reset;
+  shared_memory::get(segment_id_,object_id_reset_,should_reset);
+  if (should_reset){
+    double foo[2];
+    foo[0]=static_cast<double>(0); 
+    foo[1]=static_cast<double>(0);
+    shared_memory::set(segment_id_,object_id_consumer_,foo,2);
+    previous_producer_id_=-1;
+    ready_to_consume_ = true;
+    nb_consumed_ = 0;
+    double* data = items_.get_data();
+    data[0]=-1;
+    data[1]=0;
+    items_.reset();
+    shared_memory::set(segment_id_,object_id_producer_,
+		       data,items_.get_data_size());
+    shared_memory::set(segment_id_,object_id_reset_,false);
+  }
+}
+
 
 template <class Serializable>
 Exchange_manager_consumer<Serializable>::~Exchange_manager_consumer(){}
@@ -31,7 +60,10 @@ void Exchange_manager_consumer<Serializable>::clean_memory(){
 }
 
 template <class Serializable>
-void Exchange_manager_consumer<Serializable>::update_memory(){
+void Exchange_manager_consumer<Serializable>::update_memory(bool verbose){
+
+  // checking if the producer stopped, in which case we need to reset
+  reset_if_producer_stopped();
 
   // some items have been consumed, we need to inform the producer
   if (nb_consumed_>0){

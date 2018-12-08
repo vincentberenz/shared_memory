@@ -19,7 +19,6 @@ namespace shared_memory {
     Exchange_manager_producer(std::string segment_id,
 			      std::string object_id,
 			      int max_exhange_size);
-
     
     ~Exchange_manager_producer();
 
@@ -39,10 +38,11 @@ namespace shared_memory {
     std::string segment_id_;
     std::string object_id_producer_;
     std::string object_id_consumer_;
+    std::string object_id_reset_;
     int previous_consumer_id_;
     Serializable_stack<Serializable> items_;
     bool consumer_started_;
-    
+
   };
 
 

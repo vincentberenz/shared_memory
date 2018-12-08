@@ -51,12 +51,6 @@ void execute(){
 	exchange.consume(fiv);
 	fiv.print();
 	id = fiv.get_id();
-	if(previous_id<0) previous_id = (id-1);
-	if (id!=(previous_id+1)){
-	  std::cout << "\n\nERROR: did the consumer miss item(s) ?\n\n";
-	  RUNNING=false;
-	  break;
-	}
 	previous_id=id;
       }
 

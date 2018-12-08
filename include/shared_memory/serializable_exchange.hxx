@@ -13,21 +13,12 @@ Serializable_exchange<Serializable>::Serializable_exchange(std::string segment_i
 
 
 template<class Serializable>
-Serializable_exchange<Serializable>::~Serializable_exchange(){
-  delete[] data_;
-  shared_memory::delete_segment(segment_id_);
-  shared_memory::clear_shared_memory(segment_id_);
-}
+Serializable_exchange<Serializable>::~Serializable_exchange(){}
 
 
 template<class Serializable>
 void Serializable_exchange<Serializable>::set(const Serializable &serializable){
   serializable.serialize(data_);
-  std::cout << "set "<< segment_id_ << " " << object_id_ << " | ";
-  for(int i=0;i<Serializable::serialization_size;i++) {
-    std::cout << data_[i] << " ";
-  }
-  std::cout << "\n\n";
   shared_memory::set(segment_id_,object_id_,data_,Serializable::serialization_size);  
 }
 
@@ -35,10 +26,5 @@ void Serializable_exchange<Serializable>::set(const Serializable &serializable){
 template<class Serializable>
 void Serializable_exchange<Serializable>::read(Serializable &serializable){
   shared_memory::get(segment_id_,object_id_,data_,Serializable::serialization_size);
-  std::cout << "get "<< segment_id_ << " " << object_id_ << " | ";
-  for(int i=0;i<Serializable::serialization_size;i++) {
-    std::cout << data_[i] << " ";
-  }
-  std::cout << "\n\n";
   serializable.create(data_);
 }

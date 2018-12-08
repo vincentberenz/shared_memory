@@ -3,11 +3,13 @@ template <class Serializable>
 Exchange_manager_producer<Serializable>::Exchange_manager_producer(std::string segment_id,
 								   std::string object_id,
 								   int max_exchange_size)
+
   : items_(max_exchange_size) {
 
   segment_id_ = segment_id;
   object_id_producer_ = object_id+"_producer";
   object_id_consumer_ = object_id+"_consumer";
+  object_id_reset_ = object_id+"_reset";
   
   previous_consumer_id_ = 0;
 
@@ -16,7 +18,11 @@ Exchange_manager_producer<Serializable>::Exchange_manager_producer(std::string s
 }
 
 template <class Serializable>  
-Exchange_manager_producer<Serializable>::~Exchange_manager_producer(){}
+Exchange_manager_producer<Serializable>::~Exchange_manager_producer(){
+  // informing the consumer that the producer stopped, giving it
+  // a change to reset
+  shared_memory::set(segment_id_,object_id_reset_,true);
+}
 
 template <class Serializable>  
 void Exchange_manager_producer<Serializable>::clean_memory(){
@@ -31,16 +37,15 @@ bool Exchange_manager_producer<Serializable>::consumer_started() const {
 
 template <class Serializable>
 bool Exchange_manager_producer<Serializable>::set(const Serializable &serializable){
-  if(!consumer_started_) {
-    return false;
-  }
-  return items_.add(serializable);
+  bool added = items_.add(serializable);
+  return added;
 }
 
 
 template <class Serializable>
 void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> *get_consumed_ids){
 
+  
   // read shared memory to check if the consumer
   // did consume any data
   static double from_consumer[2];
@@ -57,7 +62,7 @@ void Exchange_manager_producer<Serializable>::update_memory(std::deque<int> *get
     // the memory has not been initialized yet
     consumer_started_=false;
   }
-  
+
   if (consumer_started_) {
   
     bool should_remove_items = true;
